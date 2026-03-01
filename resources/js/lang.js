@@ -209,6 +209,7 @@ export const translations = {
         danger_zone: {
             title: "Qatar GeoRisk",
             subtitle: "Geographic Threat Estimation",
+            quote: "Nothing will befall us except what Allah has ordained for us",
             search_placeholder: "Paste exact Google Maps Link...",
             awaiting_location: "Awaiting Location...",
             awaiting_desc: "Please paste a Google Maps link above to calculate your localized risk score.",
@@ -461,6 +462,7 @@ export const translations = {
         danger_zone: {
             title: "جيو ريسك قطر",
             subtitle: "تقدير التهديد الجغرافي",
+            quote: "لن يصيبنا إلا ما كتبه الله لنا",
             search_placeholder: "الصق رابط خرائط جوجل الدقيق...",
             awaiting_location: "في انتظار الموقع...",
             awaiting_desc: "يرجى لصق رابط خرائط جوجل أعلاه لحساب درجة المخاطر المحلية الخاصة بك.",

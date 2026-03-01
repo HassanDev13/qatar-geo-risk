@@ -304,7 +304,7 @@ export default function DangerZone() {
     }
 
     return (
-        <div className="relative w-full h-screen bg-gray-900 font-sans overflow-hidden" dir={isRTL ? 'rtl' : 'ltr'}>
+        <div className={`relative w-full h-screen bg-gray-900 overflow-hidden ${isRTL ? 'font-arabic' : 'font-sans'}`} dir={isRTL ? 'rtl' : 'ltr'}>
             <Head title={t("danger_zone.title")} />
             
             {/* Map Layer */}
@@ -397,7 +397,8 @@ export default function DangerZone() {
                         </div>
                         <h1 className="text-xl font-bold tracking-tight">{t("danger_zone.title")}</h1>
                     </div>
-                    <p className={`text-gray-300 text-sm mb-4 pl-11 rtl:pl-0 rtl:pr-11`}>{t("danger_zone.subtitle")}</p>
+                    <p className={`text-gray-300 text-sm mb-1 pl-11 rtl:pl-0 rtl:pr-11`}>{t("danger_zone.subtitle")}</p>
+                    <p className={`text-white/60 text-xs mb-4 pl-11 rtl:pl-0 rtl:pr-11 font-medium italic`}>"{t("danger_zone.quote")}"</p>
                     
                     {/* Search Field */}
                     <div className={`mb-4 pl-11 rtl:pl-0 rtl:pr-11 flex gap-2 w-full max-w-[calc(100%-2.75rem)] relative`}>
