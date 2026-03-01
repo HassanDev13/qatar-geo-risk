@@ -120,6 +120,9 @@ export default function DangerZone() {
     const [reportImage, setReportImage] = useState(null);
     const [isSubmittingReport, setIsSubmittingReport] = useState(false);
     
+    // Mobile Panel State
+    const [isMobilePanelOpen, setIsMobilePanelOpen] = useState(false);
+    
     // Create a ref attached to the MapEventsHandler map instance so the parent can access it
     const mapRef = useRef(null);
 
@@ -378,15 +381,35 @@ export default function DangerZone() {
                 </MapContainer>
             </div>
 
+            {/* Mobile Toggle Button (Visible only on small screens when panel is closed) */}
+            <div className={`md:hidden absolute top-4 z-20 pointer-events-auto transition-all duration-300 ${isMobilePanelOpen ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`} style={{ [isRTL ? 'right' : 'left']: '1rem' }}>
+                <button
+                    onClick={() => setIsMobilePanelOpen(true)}
+                    className="bg-[#8A1538]/90 text-white p-3 rounded-xl shadow-2xl hover:bg-[#6c102c] transition flex items-center justify-center border border-white/20 backdrop-blur-md"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+
             {/* UI Overlay */}
             <div className={`absolute top-0 w-full h-full pointer-events-none z-10 flex flex-col md:flex-row p-4 md:p-8 justify-between ${isRTL ? 'right-0' : 'left-0'}`}>
                 {/* Header / Main Panel */}
-                <div className="bg-[#8A1538]/90 backdrop-blur-xl border border-white/20 text-white p-6 rounded-2xl shadow-2xl pointer-events-auto h-fit w-full max-w-sm mb-4 md:mb-0 transform transition-all relative overflow-visible">
+                <div className={`bg-[#8A1538]/90 backdrop-blur-xl border border-white/20 text-white p-6 rounded-2xl shadow-2xl pointer-events-auto h-fit w-full max-w-sm mb-4 md:mb-0 transform transition-all duration-500 relative overflow-y-auto max-h-[90vh] md:max-h-none md:translate-y-0 md:opacity-100 md:scale-100 ${isMobilePanelOpen ? 'translate-y-0 opacity-100 scale-100 pointer-events-auto' : '-translate-y-[150%] opacity-0 scale-95 pointer-events-none md:pointer-events-auto'}`}>
                     
+                    {/* Mobile Close Button */}
+                    <button 
+                        onClick={() => setIsMobilePanelOpen(false)}
+                        className={`md:hidden absolute top-4 ${isRTL ? 'left-4' : 'right-4'} text-white/50 hover:text-white bg-white/10 hover:bg-white/20 p-1.5 rounded-full transition-colors`}
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+
                     {/* Language Switcher */}
                     <button
                         onClick={() => switchLanguage(locale === 'en' ? 'ar' : 'en')}
-                        className={`absolute top-4 ${isRTL ? 'left-4' : 'right-4'} text-sm font-bold bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full transition-colors`}
+                        className={`absolute top-4 ${isRTL ? 'left-[3.5rem]' : 'right-[3.5rem]'} md:${isRTL ? 'left-4' : 'right-4'} text-sm font-bold bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full transition-colors`}
                     >
                         {locale === 'en' ? 'عربي' : 'EN'}
                     </button>
