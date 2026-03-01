@@ -1,0 +1,81 @@
+# ===============================
+# Stage 1: Build frontend assets
+# ===============================
+FROM node:20-alpine AS frontend
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+# ===============================
+# Stage 2: Composer dependencies
+# ===============================
+FROM composer:2 AS vendor
+WORKDIR /app
+COPY composer.json composer.lock ./
+# Ignore platform requirements during install for speed
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs --no-scripts
+
+# ===============================
+# Stage 3: Runtime
+# ===============================
+FROM php:8.2-fpm-alpine
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Install Nginx, Supervisor, and required PHP extensions + OCR & PDF tools
+RUN apk add --no-cache \
+    nginx \
+    supervisor \
+    bash \
+    git \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    libzip-dev \
+    tesseract-ocr \
+    tesseract-ocr-data-ara \
+    tesseract-ocr-data-eng \
+    poppler-utils \
+    imagemagick \
+    autoconf \
+    g++ \
+    make \
+    linux-headers \
+    && docker-php-ext-install pdo_mysql zip gd opcache \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && apk del autoconf g++ make linux-headers
+
+# Configure PHP for production
+RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo "opcache.memory_consumption=256" >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo "opcache.max_accelerated_files=20000" >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo "opcache.validate_timestamps=0" >> /usr/local/etc/php/conf.d/opcache.ini
+
+# Create directories
+RUN mkdir -p /run/nginx
+
+# Copy app code
+COPY --chown=www-data:www-data . .
+
+# Copy vendor from Stage 2
+COPY --chown=www-data:www-data --from=vendor /app/vendor ./vendor
+
+# Copy frontend build from Stage 1
+COPY --chown=www-data:www-data --from=frontend /app/public/build ./public/build
+
+RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Copy Nginx configuration
+COPY docker/nginx.conf /etc/nginx/nginx.conf
+
+# Copy Supervisor configuration
+COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Expose port 80 (since Nginx runs on port 80 now)
+EXPOSE 80
+
+# Start Supervisord which manages Nginx, PHP-FPM, and Queue Worker
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

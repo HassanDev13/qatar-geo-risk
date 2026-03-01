@@ -1,0 +1,11 @@
+term_en,term_ar,resource_page_id,confidence_level,status,source_type
+Artificial Intelligence,الذكاء الاصطناعي,1,0.9,unverified,csv_import
+Machine Learning,التعلم الآلي,1,0.8,unverified,csv_import
+Natural Language Processing,معالجة اللغة الطبيعية,1,0.85,unverified,csv_import
+Computer Vision,رؤية الحاسوب,1,0.75,unverified,csv_import
+Data Science,علم البيانات,1,0.8,unverified,csv_import
+Big Data,البيانات الضخمة,1,0.7,unverified,csv_import
+Cloud Computing,الحوسبة السحابية,1,0.8,unverified,csv_import
+Internet of Things,إنترنت الأشياء,1,0.75,unverified,csv_import
+Blockchain,سلسلة الكتل,1,0.7,unverified,csv_import
+Cybersecurity,الأمن السيبراني,1,0.85,unverified,csv_import

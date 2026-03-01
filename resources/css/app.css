@@ -1,0 +1,56 @@
+@import "tailwindcss";
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+@source '../**/*.jsx';
+
+@theme {
+    --font-sans:
+        "Instrument Sans", ui-sans-serif, system-ui, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
+    --font-arabic: "Tajawal", "Noto Sans Arabic", "Arial", sans-serif;
+}
+
+/* Arabic font styling */
+.font-arabic {
+    font-family: var(--font-arabic);
+}
+
+/* RTL Support */
+[dir="rtl"] {
+    direction: rtl;
+}
+
+[dir="rtl"] body {
+    font-family: var(--font-arabic);
+}
+
+
+
+/* Flip icons and elements that should mirror in RTL */
+[dir="rtl"] .rtl-flip {
+    transform: scaleX(-1);
+}
+
+/* Ensure proper spacing in RTL */
+[dir="rtl"] .space-x-reverse> :not([hidden])~ :not([hidden]) {
+    --tw-space-x-reverse: 1;
+}
+
+/* RTL-aware flex direction */
+[dir="rtl"] .flex-row {
+    flex-direction: row-reverse;
+}
+
+/* Ensure dropdowns and popovers align correctly in RTL */
+[dir="rtl"] [data-radix-popper-content-wrapper] {
+    direction: rtl;
+}
+
+/* Hide Leaflet watermark from map entirely */
+.leaflet-control-attribution {
+    display: none !important;
+}

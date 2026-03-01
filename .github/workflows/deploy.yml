@@ -1,0 +1,78 @@
+name: 🚀 Deploy Laravel App
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+
+jobs:
+  web-deploy:
+    name: 🎉 Deploy to Server
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the latest code
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v3
+
+      # Step 2: Deploy to VPS using SSH
+      - name: 📂 Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          script: |
+            # Determine the deployment directory based on the branch
+            case "${{ github.ref_name }}" in
+              "main")
+                DEPLOY_DIR="/www/wwwroot/app.munasiq"
+                ;;
+              "staging")
+                DEPLOY_DIR="/www/wwwroot/staging.munasiq"
+                ;;
+              *)
+                echo "❌ Unknown branch: ${{ github.ref_name }}"
+                exit 1
+                ;;
+            esac
+
+            echo "📌 Deploying branch: ${{ github.ref_name }}"
+            echo "📂 Target directory: $DEPLOY_DIR"
+
+            cd "$DEPLOY_DIR"
+
+            echo "🔄 Pulling latest code..."
+            git stash
+            git pull origin ${{ github.ref_name }}
+
+            echo "⚙️ Switching PHP version..."
+            sudo update-alternatives --set php /www/server/php/84/bin/php
+
+            echo "📦 Installing PHP dependencies..."
+            composer install --no-dev --prefer-dist --optimize-autoloader
+
+            echo "📦 Installing Node dependencies..."
+            npm install --legacy-peer-deps
+
+            echo "⚡ Building assets..."
+            npm run build
+
+            echo "🔧 Optimizing Filament..."
+            php artisan filament:optimize || true
+
+            echo "📊 Running migrations..."
+            php artisan migrate --force
+
+            echo "🧹 Clearing and caching configs..."
+            php artisan l5-swagger:generate
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            
+            echo "🔄 Restarting Supervisor..."
+            sudo systemctl restart supervisor
+
+            echo "✅ Deployment completed successfully!"

@@ -1,0 +1,44 @@
+server {
+    listen 80;
+    listen [::]:80;
+    server_name munasiq.org;
+
+    # Redirect all HTTP traffic to HTTPS
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name munasiq.org;
+
+    # Example SSL Certificates (usually managed by Let's Encrypt / Certbot)
+    ssl_certificate /etc/letsencrypt/live/munasiq.org/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/munasiq.org/privkey.pem;
+
+    # Recommended SSL settings
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers off;
+    ssl_ciphers "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384";
+
+    # Log files
+    access_log /var/log/nginx/munasiq.org-access.log;
+    error_log /var/log/nginx/munasiq.org-error.log;
+
+    location / {
+        # Forward everything to the Docker container listening on port 8000
+        proxy_pass http://127.0.0.1:8000;
+        
+        # Pass important headers to the Docker container
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # Increase timeouts if your app takes a long time to process (e.g., OCR or large uploads)
+        proxy_read_timeout 300s;
+        proxy_connect_timeout 300s;
+    }
+}

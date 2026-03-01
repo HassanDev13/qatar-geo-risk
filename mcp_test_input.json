@@ -1,0 +1,3 @@
+{"jsonrpc": "2.0", "method": "initialize", "id": 1}
+{"jsonrpc": "2.0", "method": "tools/list", "id": 2}
+{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "search_terms", "arguments": {"query": "data"}}, "id": 3}
